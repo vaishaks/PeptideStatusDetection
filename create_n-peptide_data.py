@@ -6,8 +6,8 @@ def create_npeptide_data(n):
     npep = open("data/"+str(n)+"peptides.txt", "w")
     for line in f:
         i = 0
-        while i+6 < len(line):    
+        while i+n < len(line):    
             npep.write(line[i:i+6]+"\n")
-            i += 6
+            i += n
 
 create_npeptide_data(6)
