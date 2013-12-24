@@ -8,7 +8,7 @@ from sklearn import cross_validation as cv
 
 n = raw_input("Enter the size of the window: ")
 print "Creating data.."
-ca.create_amylnset(n)
+ca.create_amylnset(int(n))
 print "Training the classifier.."
 X= []
 y = []

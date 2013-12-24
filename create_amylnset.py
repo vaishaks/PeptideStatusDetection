@@ -11,12 +11,18 @@ aaimap = {"A":0, "R":1, "N":2, "D":3, "C":4, "Q":5, "E":6, "G":7,
 
 def create_aaindex():
     aaindex = open("data/aaindex1.txt")
-    amino_acid_index = open("data/amino_acid_index.txt", "w")
+    amino_acid_index = open("data/temp/amino_acid_index.txt", "w")
     line  = aaindex.readline()
     while line:
         if line[0] == 'I':
-            amino_acid_index.write(aaindex.readline().rstrip()
-            + " " + aaindex.readline())
+            f = aaindex.readline().rstrip() + " " + aaindex.readline().rstrip()
+            if 'NA' not in f:
+                p = map(float, f.split())
+                pdash = []
+                for v in p:
+                    # Normalization, new limts (-2, 2)
+                    pdash.append((v - min(p))/(max(p)-min(p))*4 - 2)
+                amino_acid_index.write(" ".join(map(str, pdash)) + "\n")
             aaindex.readline()
         line = aaindex.readline()
         
@@ -49,7 +55,7 @@ def getNegativeData(id, n):
     i = 0
     while i+n < len(seq):    
         npep.write(seq[i:i+n]+"\n")
-        i += n
+        i += 1
 
 def getData(n):
     if not os.path.exists("data/temp/positive_data.txt"):
@@ -73,10 +79,10 @@ def create_npeptide_data(n):
         i = 0
         while i+n < len(line):    
             npep.write(line[i:i+n]+"\n")
-            i += n
+            i += 1
             
 def compute_features(seq):
-    aai = open("data/amino_acid_index.txt")
+    aai = open("data/temp/amino_acid_index.txt")
     seq_features = []
     aaindex = []
     for line in aai:
@@ -95,7 +101,7 @@ def compute_features(seq):
 def create_amylnset(n):
     if os.path.exists("data/temp/amyl"+str(n)+"set.txt"):
         return
-    if not os.path.exists("data/amino_acid_index.txt"):
+    if not os.path.exists("data/temp/amino_acid_index.txt"):
         create_aaindex()
     create_npeptide_data(n)
     fp = open("data/temp/"+str(n)+"peptides.txt")
@@ -107,7 +113,7 @@ def create_amylnset(n):
     random.shuffle(data)
     amylnset = open("data/temp/amyl"+str(n)+"set.txt", "w")
     # Copy the amino acid index to memory and remove incomplete entries
-    aai = open("data/amino_acid_index.txt")
+    aai = open("data/temp/amino_acid_index.txt")
     aaindex = []
     for line in aai:
         if len(line.split()) == 20:
@@ -121,8 +127,6 @@ def create_amylnset(n):
         for feature in aaindex:
             fsum = 0
             for x in data[i].split()[0]:
-                fsum += feature[aaimap[x]] # summation, no auto-correlation
+                fsum += feature[aaimap[x]]# no normalization auto-correlation
             seq_features = seq_features + " " + str(fsum)
         amylnset.write(data[i] + seq_features + "\n")
-
-create_amylnset(7)
