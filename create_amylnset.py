@@ -48,7 +48,7 @@ def getNegativeData(id, n):
             seq += line.rstrip()
     i = 0
     while i+n < len(seq):    
-        npep.write(seq[i:i+6]+"\n")
+        npep.write(seq[i:i+n]+"\n")
         i += n
 
 def getData(n):
@@ -72,12 +72,12 @@ def create_npeptide_data(n):
     for line in f:
         i = 0
         while i+n < len(line):    
-            npep.write(line[i:i+6]+"\n")
+            npep.write(line[i:i+n]+"\n")
             i += n
             
 def compute_features(seq):
     aai = open("data/amino_acid_index.txt")
-    seq_features = ""
+    seq_features = []
     aaindex = []
     for line in aai:
         if len(line.split()) == 20:
@@ -89,10 +89,12 @@ def compute_features(seq):
         fsum = 0
         for x in seq:
             fsum += feature[aaimap[x]]
-        seq_features = seq_features + " " + str(fsum)
-    print seq_features
+        seq_features.append(fsum)
+    return seq_features
 
 def create_amylnset(n):
+    if os.path.exists("data/temp/amyl"+str(n)+"set.txt"):
+        return
     if not os.path.exists("data/amino_acid_index.txt"):
         create_aaindex()
     create_npeptide_data(n)
