@@ -129,4 +129,9 @@ def create_amylnset(n):
             for x in data[i].split()[0]:
                 fsum += feature[aaimap[x]]# no normalization auto-correlation
             seq_features = seq_features + " " + str(fsum)
+        # sequence info, scaled index value in order
+        ac = " "
+        for x in data[i].split()[0]:
+            k = float(aaimap[x])/19.0*4.0-2.0
+            ac = ac + str(k) + " "
         amylnset.write(data[i] + seq_features + "\n")

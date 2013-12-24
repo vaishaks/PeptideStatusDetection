@@ -18,12 +18,21 @@ for line in data:
     y.append(int(temp[1]))
     X.append(map(float, temp[2:]))
 
-X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.4, 
+X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
                                                        random_state=0)
-crossclf = svm.SVC().fit(X_train, y_train)
+max_score = 0
+c = 1
+for i in xrange(1, 5, 1):
+    crossclf = svm.SVC(C=i).fit(X_train, y_train)
+    scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
+    if scores.mean() > max_score:
+        max_score = scores.mean()
+        c = i
+        
+crossclf = svm.SVC(C=c).fit(X_train, y_train)      
 print "Classifier trained with accuracy", crossclf.score(X_test, y_test)
 
-clf = svm.SVC()
+clf = svm.SVC(C=c)
 clf.fit(X, y)
 
 print "Enter the n-peptide sequence: ",
