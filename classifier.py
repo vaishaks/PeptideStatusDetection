@@ -3,6 +3,7 @@ Creates a classifier for predicting the peptide status.
 """
 
 import create_amylnset as ca
+import numpy as np
 from sklearn import svm
 from sklearn import cross_validation as cv
 
@@ -22,15 +23,23 @@ X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2,
                                                        random_state=0)
 max_score = 0
 c = 1
-for i in xrange(1, 5, 1):
+for i in np.arange(1.0, 1.4, 0.08):
     crossclf = svm.SVC(C=i).fit(X_train, y_train)
     scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
     if scores.mean() > max_score:
         max_score = scores.mean()
         c = i
-        
-crossclf = svm.SVC(C=c).fit(X_train, y_train)      
-print "Classifier trained with accuracy", crossclf.score(X_test, y_test)
+g = 0
+for i in np.arange(0.0, 0.004, 0.0008):
+    crossclf = svm.SVC(C=c, gamma=i).fit(X_train, y_train)
+    scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
+    if scores.mean() > max_score:
+        max_score = scores.mean()
+        g = i
+
+print "Cross-Validation score", max_score      
+crossclf = svm.SVC(C=c, gamma=g).fit(X_train, y_train)      
+print "Independant test score", crossclf.score(X_test, y_test)
 
 clf = svm.SVC(C=c)
 clf.fit(X, y)
