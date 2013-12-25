@@ -17,6 +17,7 @@ else:
     print "Creating data.."
     ca.create_amylnset(n)
     print "Training the classifier.."
+    # Extracting features and labels from the dataset.
     X= []
     y = []
     data = open("data/temp/amyl"+str(n)+"set.txt")
@@ -25,16 +26,21 @@ else:
         y.append(int(temp[1]))
         X.append(map(float, temp[2:]))
     data.close()
+    
+    # Split the data into training and test.
     X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
                                                        random_state=0)
+    # Tuning the C parameter to regularize the model.                                       
     max_score = 0
     c = 1
     for i in np.arange(1.0, 1.4, 0.08):
         crossclf = svm.SVC(C=i).fit(X_train, y_train)
+        # Performing 5-fold cross-validation on the training data
         scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
         if scores.mean() > max_score:
             max_score = scores.mean()
             c = i
+    # Tuning the gamma parameter
     g = 0
     for i in np.arange(0.0, 0.004, 0.0008):
         crossclf = svm.SVC(C=c, gamma=i).fit(X_train, y_train)
@@ -49,8 +55,10 @@ else:
 
     clf = svm.SVC(C=c)
     clf.fit(X, y)
+    # Save the model for future use. Saves computing time.
     joblib.dump(clf, "data/temp/amyl"+str(n)+"pred.pkl")
 
+# Predicting the amyloidogenic regions in a protein sequence in fasta format.
 ip = open("data/input.fasta")
 op = open("data/temp/output.txt", "w")
 ip.readline()
