@@ -9,6 +9,7 @@ Exploiting heterogeneous features to improve in silico prediction of peptide sta
 ## Dependancies:
 * Scikit-Learn
 * Numpy
+* Pylab
 
 ## Instructions:
 * Make sure that all dependancies are pre-installed
