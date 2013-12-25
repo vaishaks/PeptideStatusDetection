@@ -8,6 +8,7 @@ import numpy as np
 from sklearn import svm
 from sklearn import cross_validation as cv
 from sklearn.externals import joblib
+from sklearn.grid_search import GridSearchCV
 
 n = int(raw_input("Enter the size of the window: "))
 if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
@@ -30,30 +31,17 @@ else:
     # Split the data into training and test.
     X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
                                                        random_state=0)
-    # Tuning the C parameter to regularize the model.                                       
-    max_score = 0
-    c = 1
-    for i in np.arange(1.0, 1.4, 0.08):
-        crossclf = svm.SVC(C=i).fit(X_train, y_train)
-        # Performing 5-fold cross-validation on the training data
-        scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
-        if scores.mean() > max_score:
-            max_score = scores.mean()
-            c = i
-    # Tuning the gamma parameter
-    g = 0
-    for i in np.arange(0.0, 0.004, 0.0008):
-        crossclf = svm.SVC(C=c, gamma=i).fit(X_train, y_train)
-        scores = cv.cross_val_score(crossclf, X_train, y_train, cv=5)
-        if scores.mean() > max_score:
-            max_score = scores.mean()
-            g = i
-
-    print "Cross-Validation score", max_score      
-    crossclf = svm.SVC(C=c, gamma=g).fit(X_train, y_train)      
-    print "Independant test score", crossclf.score(X_test, y_test)
-
-    clf = svm.SVC(C=c)
+    # Using GridSearchCV to find the best values for C and gamma
+    C_range = 10.0 ** np.arange(-2, 4)
+    gamma_range = 10.0 ** np.arange(-5, 1)
+    param_grid = dict(gamma=gamma_range, C=C_range)
+    skf = cv.StratifiedKFold(y=y_train, n_folds=3)
+    grid = GridSearchCV(svm.SVC(), param_grid=param_grid, cv=skf)
+    grid.fit(X_train, y_train)
+    crossclf = grid.best_estimator_
+    print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, y_train, cv=5).mean()
+    print "Independent test score", crossclf.score(X_test, y_test)
+    clf = svm.SVC(**grid.best_params_) # Unpack the best params found
     clf.fit(X, y)
     # Save the model for future use. Saves computing time.
     joblib.dump(clf, "data/temp/amyl"+str(n)+"pred.pkl")
