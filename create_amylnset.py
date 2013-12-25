@@ -20,7 +20,7 @@ def create_aaindex():
                 p = map(float, f.split())
                 pdash = []
                 for v in p:
-                    # Normalization, new limts (-2, 2)
+                    # min-max Normalization, new limts (-2, 2)
                     pdash.append((v - min(p))/(max(p)-min(p))*4 - 2)
                 amino_acid_index.write(" ".join(map(str, pdash)) + "\n")
             aaindex.readline()
