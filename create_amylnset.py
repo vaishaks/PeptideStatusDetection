@@ -96,6 +96,9 @@ def compute_features(seq):
         for x in seq:
             fsum += feature[aaimap[x]]
         seq_features.append(fsum)
+    for x in seq:
+        k = float(aaimap[x])/19.0*4.0-2.0
+        seq_features.append(k)
     return seq_features
 
 def create_amylnset(n):
@@ -127,11 +130,11 @@ def create_amylnset(n):
         for feature in aaindex:
             fsum = 0
             for x in data[i].split()[0]:
-                fsum += feature[aaimap[x]]# no normalization auto-correlation
+                fsum += feature[aaimap[x]]
             seq_features = seq_features + " " + str(fsum)
         # sequence info, scaled index value in order
         ac = " "
         for x in data[i].split()[0]:
             k = float(aaimap[x])/19.0*4.0-2.0
             ac = ac + str(k) + " "
-        amylnset.write(data[i] + seq_features + "\n")
+        amylnset.write(data[i] + seq_features + ac + "\n")
