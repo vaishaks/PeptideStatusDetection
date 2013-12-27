@@ -42,8 +42,10 @@ else:
     grid.fit(X_train, y_train)
     
     crossclf = svm.SVC(probability=True, **grid.best_params_)
-    print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, y_train, cv=5).mean()
-    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test, y_test)
+    print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, 
+                                                        y_train, cv=5).mean()
+    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test
+                                                                    , y_test)
     
     # Compute roc and auc
     probas_ = crossclf.predict_proba(X_test)
