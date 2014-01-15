@@ -1,7 +1,7 @@
-Exploiting heterogeneous features to improve in silico prediction of peptide status - amyloidogenic or non-amyloidogenic
+Peptide Status Detection
 =========================================================================================================================
 
-## Includes:
+## Files:
 * 'create_amylnset.py': Python script used to extract positive data regions and prepare dataset for classification from the protein sequences in fasta format.
 * 'classifier.py': Classifier written in python script using scikit-learn to predict the amyloidogenic regions of size 'n' in a protein sequence.
 * Data: Protein sequences, both positive and negative regions.
@@ -9,6 +9,7 @@ Exploiting heterogeneous features to improve in silico prediction of peptide sta
 ## Dependancies:
 * Scikit-Learn
 * Numpy
+* Pylab
 
 ## Instructions:
 * Make sure that all dependancies are pre-installed
