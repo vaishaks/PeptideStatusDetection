@@ -40,6 +40,17 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     pafig_test.close()
     print "Pafig test score ", clf.score(X, y)
 
+    cd.create_amylpred_test(6)
+    amylpred_test = open("data/temp/amylpred_hexpepset.txt")
+    X = []
+    y = []
+    for line in amylpred_test:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    amylpred_test.close()
+    print "Amypred test score ", clf.score(X, y)
+
 else:
     print "Creating data.."
     cd.create_amylnset(n)
