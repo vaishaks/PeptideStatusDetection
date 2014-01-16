@@ -3,6 +3,7 @@ Creates a classifier for predicting the peptide status.
 """
 
 import create_amylnset as ca
+import create_pafig_test as paf
 import os
 import numpy as np
 import pylab as pl
@@ -16,6 +17,26 @@ n = int(raw_input("Enter the size of the window: "))
 if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     print "Using a pre-trained classifier.."
     clf = joblib.load("data/temp/amyl"+str(n)+"pred.pkl")
+    zipper_test = open("data/test/zipper_hexpepset.txt")
+    X = []
+    y = []
+    for line in zipper_test:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    zipper_test.close()
+    print "Zipper test score ", clf.score(X, y)
+
+    pafig_test = open("data/test/pafig_hexpepset.txt")
+    X = []
+    y = []
+    for line in pafig_test:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    pafig_test.close()
+
+    print "Pafig test score ", clf.score(X, y)
 else:
     print "Creating data.."
     ca.create_amylnset(n)
@@ -43,7 +64,7 @@ else:
     
     crossclf = svm.SVC(probability=True, **grid.best_params_)
     print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, y_train, cv=5).mean()
-    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test, y_test)
+    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test, y_test)                
     
     # Compute roc and auc
     probas_ = crossclf.predict_proba(X_test)
