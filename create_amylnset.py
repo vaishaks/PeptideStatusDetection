@@ -125,16 +125,6 @@ def create_amylnset(n):
             except ValueError:
                 pass
     # Compute the features for each sequence and append them to the data
-    for i in xrange(len(data)):
-        seq_features = ""
-        for feature in aaindex:
-            fsum = 0
-            for x in data[i].split()[0]:
-                fsum += feature[aaimap[x]]
-            seq_features = seq_features + " " + str(fsum)
-        # sequence info, scaled index value in order
-        ac = " "
-        for x in data[i].split()[0]:
-            k = float(aaimap[x])/19.0*4.0-2.0
-            ac = ac + str(k) + " "
-        amylnset.write(data[i] + seq_features + ac + "\n")
+    for i in xrange(len(data)):        
+        seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0]))
+        amylnset.write(data[i] + " " + seq_features + "\n")

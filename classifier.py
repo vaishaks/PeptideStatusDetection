@@ -11,7 +11,7 @@ from sklearn import svm
 from sklearn import cross_validation as cv
 from sklearn.externals import joblib
 from sklearn.grid_search import GridSearchCV
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, confusion_matrix
 
 n = int(raw_input("Enter the size of the window: "))
 if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
@@ -63,8 +63,10 @@ else:
     grid.fit(X_train, y_train)
     
     crossclf = svm.SVC(probability=True, **grid.best_params_)
-    print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, y_train, cv=5).mean()
-    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test, y_test)                
+    print "Cross-Validation score", cv.cross_val_score(crossclf, X_train, 
+                                                        y_train, cv=5).mean()
+    print "Independent test score", crossclf.fit(X_train, y_train).score(X_test
+                                                                    , y_test)
     
     # Compute roc and auc
     probas_ = crossclf.predict_proba(X_test)
@@ -82,6 +84,20 @@ else:
     pl.ylabel('True Positive Rate')
     pl.title('Receiver operating characteristic')
     pl.legend(loc="lower right")
+    pl.show()
+    
+    # Confusion Matrix
+    y_pred = crossclf.predict(X_test)
+    cm = confusion_matrix(y_test, y_pred)
+    print "The confusion matrix:"
+    print cm
+    
+    # Plot the confusion matrix
+    pl.matshow(cm)
+    pl.title('Confusion Matrix')
+    pl.colorbar()
+    pl.ylabel('Amyloidogenic')
+    pl.xlabel('Non-Amyloidogenic')
     pl.show()
     
     clf = svm.SVC(**grid.best_params_) # Unpack the best params found
