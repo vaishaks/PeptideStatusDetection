@@ -2,8 +2,7 @@
 Creates a classifier for predicting the peptide status.
 """
 
-import create_amylnset as ca
-import create_pafig_test as paf
+import create_datasets as cd
 import os
 import numpy as np
 import pylab as pl
@@ -17,7 +16,10 @@ n = int(raw_input("Enter the size of the window: "))
 if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     print "Using a pre-trained classifier.."
     clf = joblib.load("data/temp/amyl"+str(n)+"pred.pkl")
-    zipper_test = open("data/test/zipper_hexpepset.txt")
+
+    # Testing on a standard dataset
+    cd.create_zipper_test(6)
+    zipper_test = open("data/temp/zipper_hexpepset.txt")
     X = []
     y = []
     for line in zipper_test:
@@ -27,7 +29,8 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     zipper_test.close()
     print "Zipper test score ", clf.score(X, y)
 
-    pafig_test = open("data/test/pafig_hexpepset.txt")
+    cd.create_pafig_test(6)
+    pafig_test = open("data/temp/pafig_hexpepset.txt")
     X = []
     y = []
     for line in pafig_test:
@@ -35,11 +38,11 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         y.append(int(temp[1]))
         X.append(map(float, temp[2:]))
     pafig_test.close()
-
     print "Pafig test score ", clf.score(X, y)
+
 else:
     print "Creating data.."
-    ca.create_amylnset(n)
+    cd.create_amylnset(n)
     print "Training the classifier.."
     # Extracting features and labels from the dataset.
     X= []
@@ -114,6 +117,6 @@ for line in ip:
     seq += line.rstrip()
 for i in xrange(len(seq)-n):
     window = seq[i:i+n]
-    if clf.predict(ca.compute_features(window))[0]:
+    if clf.predict(cd.compute_features(window))[0]:
         op.write(window + " " + str(i) + " " + str(i+n) + "\n")
 op.close()
