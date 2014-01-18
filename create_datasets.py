@@ -3,6 +3,7 @@ Creates the dataset containing n-peptide sequences and their features.
 """
 
 import os
+import string
 import random
 
 aaimap = {"A":0, "R":1, "N":2, "D":3, "C":4, "Q":5, "E":6, "G":7, 
@@ -13,8 +14,15 @@ def create_aaindex():
     aaindex = open("data/aaindex1.txt")
     amino_acid_index = open("data/temp/amino_acid_index.txt", "w")
     line  = aaindex.readline()
-    while line:
+    d = False
+    feature = []
+    while line:        
+        if line[0] == 'D':
+	   feature.append("-".join(line[:string.find(line, '(')].split()[1:]))
+	   d = True	
         if line[0] == 'I':
+            if d == False:
+                feature.append("noname")
             f = aaindex.readline().rstrip() + " " + aaindex.readline().rstrip()
             if 'NA' not in f:
                 p = map(float, f.split())
@@ -22,8 +30,12 @@ def create_aaindex():
                 for v in p:
                     # min-max Normalization, new limts (-2, 2)
                     pdash.append((v - min(p))/(max(p)-min(p))*4 - 2)
-                amino_acid_index.write(" ".join(map(str, pdash)) + "\n")
-            aaindex.readline()
+                feature.append(" ".join(map(str, pdash)) + "\n")
+                amino_acid_index.write(" ".join(feature))  
+                feature = []  
+            else:
+                feature = []            
+            d = False
         line = aaindex.readline()
         
 def getPositiveData(id, l, r, n):
@@ -86,11 +98,10 @@ def compute_features(seq):
     seq_features = []
     aaindex = []
     for line in aai:
-        if len(line.split()) == 20:
-            try:
-                aaindex.append(map(float, line.split()))
-            except ValueError:
-                pass
+        try:
+            aaindex.append(map(float, line.split()[1:]))
+        except ValueError:
+            pass
     for feature in aaindex:
         fsum = 0
         for x in seq:
@@ -100,7 +111,7 @@ def compute_features(seq):
         k = float(aaimap[x])/19.0*4.0-2.0
         seq_features.append(k)
     return seq_features
-
+    
 def create_amylnset(n):
     if os.path.exists("data/temp/amyl"+str(n)+"set.txt"):
         return
@@ -128,7 +139,6 @@ def create_amylnset(n):
     for i in xrange(len(data)):        
         seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0]))
         amylnset.write(data[i] + " " + seq_features + "\n")
-
 
 def create_pafig_test(n):
     if os.path.exists("data/temp/pafig_hexpepset.txt"):
