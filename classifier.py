@@ -56,7 +56,7 @@ else:
     cd.create_amylnset(n)
     print "Training the classifier.."
     # Extracting features and labels from the dataset.
-    X= []
+    X = []
     y = []
     data = open("data/temp/amyl"+str(n)+"set.txt")
     for line in data:
