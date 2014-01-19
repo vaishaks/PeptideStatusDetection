@@ -185,6 +185,7 @@ def create_amylnset(n):
     feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
+    # Change to n*n for implementing co-variance matrix
     feature_ids.extend(range(560, 560+n))
     
     create_npeptide_data(n)
