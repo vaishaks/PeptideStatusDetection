@@ -25,19 +25,22 @@ y = np.array(y)
 Xtrans = X.T
 
 feature_scores = []
+feature_id = []
 # Computing scores taking single features at a time other than the correlation
 for i in xrange(len(Xtrans)-n):
     # Using naive bayes because it's a faster algorithm, check for disadvantages
     clf = GaussianNB()
     feature_scores.append(cv.cross_val_score(clf, [[x] for x in Xtrans[i]], 
                                                 y, cv=5).mean())
+    feature_id.append(i)
 # Get the names of the features   
 feature_names = []
 aaindex = open("data/temp/amino_acid_index.txt")
 for line in aaindex:
     feature_names.append(line.split()[0])
 
-# Create a pandas series of the feature scores and names, sort and save it to csv
-feature_series = pd.Series(feature_scores, index=feature_names)
-feature_series.sort(ascending=False)
-feature_series.to_csv("data/temp/feature_series.csv")
+# Sort features based on score and save to csv
+d = {"scores": feature_scores, "id": feature_id}
+feature_dataframe = pd.DataFrame(d, index=feature_names)
+feature_dataframe = feature_dataframe.sort('scores', ascending=False)
+feature_dataframe.to_csv("data/temp/feature_dataframe.csv")
