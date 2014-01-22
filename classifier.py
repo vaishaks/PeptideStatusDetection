@@ -3,7 +3,6 @@ Creates a classifier for predicting the peptide status.
 """
 
 import create_datasets as cd
-import optimal_feature_selection as ofs
 import os
 import numpy as np
 import pylab as pl
@@ -20,6 +19,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     clf = joblib.load("data/temp/amyl"+str(n)+"pred.pkl")
 
     # Testing on a standard dataset
+    """"
     cd.create_zipper_test(6)
     zipper_test = open("data/temp/zipper_hexpepset.txt")
     X = []
@@ -30,8 +30,8 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     zipper_test.close()
     print "Zipper test score ", clf.score(X, y)
-
-    cd.create_pafig_test(6)
+    """
+    cd.create_pafig_data(6)
     pafig_test = open("data/temp/pafig_hexpepset.txt")
     X = []
     y = []
@@ -41,7 +41,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     pafig_test.close()
     print "Pafig test score ", clf.score(X, y)
-
+    """
     cd.create_amylpred_test(6)
     amylpred_test = open("data/temp/amylpred_hexpepset.txt")
     X = []
@@ -52,7 +52,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     amylpred_test.close()
     print "Amypred test score ", clf.score(X, y)
-
+    """
 else:
     print "Creating data.."
     cd.create_amylnset(n)
@@ -124,9 +124,10 @@ else:
 # Predicting the amyloidogenic regions in a protein sequence in fasta format.
 ip = open("data/input.fasta")
 op = open("data/temp/output.txt", "w")
-if not os.path.exists("data/temp/feature_dataframe.csv"):
-    ofs.select_optimal_features(6)
-feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
+if not os.path.exists("data/temp/amylnset_feature_dataframe.csv"):
+    import optimal_feature_selection as ofs
+    ofs.select_optimal_features(6, "amylnset")
+feature_dataframe = pd.read_csv("data/temp/amylnset_feature_dataframe.csv", 
                                         index_col=0, header=0)
 feature_ids = [x for x in feature_dataframe["id"]]
 feature_ids.extend(range(560, 560+n))
