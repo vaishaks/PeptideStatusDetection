@@ -1,21 +1,45 @@
 import os
-from sklearn import svm
+import numpy as np
+import pandas as pd
+import create_datasets as cd
+from sklearn.naive_bayes import GaussianNB
+from sklearn import cross_validation as cv
 
-aaindex = open("data/aaindex1.txt")
-amino_acid_index = open("data/temp/amino_acid_index.txt", "w")
-line  = aaindex.readline()
-while line:
-	if line[0] == 'I':
-		f = aaindex.readline().rstrip() + " " + aaindex.readline().rstrip()
-		if 'NA' not in f:
-			p = map(float, f.split())
-			pdash = []
-			for v in p:
-				# min-max Normalization, new limts (-2, 2)
-				pdash.append((v - min(p))/(max(p)-min(p))*4 - 2)
-			amino_acid_index.write(" ".join(map(str, pdash)))
-		aaindex.readline()
-	if line[0] == 'D':
-		f = " ".join(line.split()[1:])
-		amino_acid_index.write(" "+ f + "\n")
-	line = aaindex.readline()
+def select_optimal_features(n):
+    if not os.path.exists("data/temp/temp_amyl"+str(n)+"set.txt"):
+        cd.create_temp_amylnset(n)
+
+    # Extracting features and labels from the dataset.
+    X = []
+    y = []
+    data = open("data/temp/temp_amyl"+str(n)+"set.txt")
+    for line in data:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    data.close()
+
+    X = np.array(X)
+    y = np.array(y)
+    Xtrans = X.T
+
+    feature_scores = []
+    feature_id = []
+    # Computing scores taking single features at a time other than the correlation
+    for i in xrange(len(Xtrans)-n):
+        # Using naive bayes because it's a faster algorithm, check for disadvantages
+        clf = GaussianNB()
+        feature_scores.append(cv.cross_val_score(clf, [[x] for x in Xtrans[i]], 
+                                                    y, cv=5).mean())
+        feature_id.append(i)
+    # Get the names of the features   
+    feature_names = []
+    aaindex = open("data/temp/amino_acid_index.txt")
+    for line in aaindex:
+        feature_names.append(line.split()[0])
+
+    # Sort features based on score and save to csv
+    d = {"scores": feature_scores, "id": feature_id}
+    feature_dataframe = pd.DataFrame(d, index=feature_names)
+    feature_dataframe = feature_dataframe.sort('scores', ascending=False)
+    feature_dataframe.to_csv("data/temp/feature_dataframe.csv")
