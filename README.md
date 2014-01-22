@@ -10,6 +10,7 @@ Peptide Status Detection
 * Scikit-Learn
 * Numpy
 * Pylab
+* Pandas
 
 ## Instructions:
 * Make sure that all dependancies are pre-installed

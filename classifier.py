@@ -3,9 +3,11 @@ Creates a classifier for predicting the peptide status.
 """
 
 import create_datasets as cd
+import optimal_feature_selection as ofs
 import os
 import numpy as np
 import pylab as pl
+import pandas as pd
 from sklearn import svm
 from sklearn import cross_validation as cv
 from sklearn.externals import joblib
@@ -56,7 +58,7 @@ else:
     cd.create_amylnset(n)
     print "Training the classifier.."
     # Extracting features and labels from the dataset.
-    X= []
+    X = []
     y = []
     data = open("data/temp/amyl"+str(n)+"set.txt")
     for line in data:
@@ -64,6 +66,8 @@ else:
         y.append(int(temp[1]))
         X.append(map(float, temp[2:]))
     data.close()
+    
+
 
     # Split the data into training and test.
     X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
@@ -122,12 +126,18 @@ else:
 # Predicting the amyloidogenic regions in a protein sequence in fasta format.
 ip = open("data/input.fasta")
 op = open("data/temp/output.txt", "w")
+if not os.path.exists("data/temp/feature_dataframe.csv"):
+    ofs.select_optimal_features(6)
+feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
+                                        index_col=0, header=0)
+feature_ids = [x for x in feature_dataframe["id"]]
+feature_ids.extend(range(560, 560+n))
 ip.readline()
 seq = ""
 for line in ip:
     seq += line.rstrip()
 for i in xrange(len(seq)-n):
     window = seq[i:i+n]
-    if clf.predict(cd.compute_features(window))[0]:
+    if clf.predict(cd.compute_features(window, feature_ids))[0]:
         op.write(window + " " + str(i) + " " + str(i+n) + "\n")
 op.close()
