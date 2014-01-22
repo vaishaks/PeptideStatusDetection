@@ -96,7 +96,7 @@ def create_npeptide_data(n):
             npep.write(line[i:i+n]+"\n")
             i += 1
             
-def compute_features(seq, feature_ids):
+def compute_features(seq, feature_ids=[]):
     aai = open("data/temp/amino_acid_index.txt")
     seq_features = []
     aaindex = []
@@ -113,6 +113,9 @@ def compute_features(seq, feature_ids):
     for x in seq:
         k = float(aaimap[x])/19.0*4.0-2.0
         seq_features.append(k)
+    # Compute all features if feature ID's are not mentioned
+    if feature_ids == []:
+        return seq_features
     # Using only best 100 features
     seq_features = np.array(seq_features)
     seq_features_trans = seq_features.T
@@ -125,56 +128,6 @@ def compute_features(seq, feature_ids):
             break
     seq_features = np.array(seq_features).T
     return seq_features.tolist()
-
-def compute_temp_features(seq):
-    aai = open("data/temp/amino_acid_index.txt")
-    seq_features = []
-    aaindex = []
-    for line in aai:
-        try:
-            aaindex.append(map(float, line.split()[1:]))
-        except ValueError:
-            pass
-    for feature in aaindex:
-        fsum = 0
-        for x in seq:
-            fsum += feature[aaimap[x]]
-        seq_features.append(fsum)
-    for x in seq:
-        k = float(aaimap[x])/19.0*4.0-2.0
-        seq_features.append(k)
-    return seq_features
-
-'''
-def create_temp_amylnset(n):
-    if os.path.exists("data/temp/temp_amyl"+str(n)+"set.txt"):
-        return
-    if not os.path.exists("data/temp/amino_acid_index.txt"):
-        create_aaindex()
-    
-    create_npeptide_data(n)
-    fp = open("data/temp/"+str(n)+"peptides.txt")
-    fn = open("data/temp/neg-"+str(n)+"peptides.txt")
-    data = [line.rstrip() + " 1" for line in fp.readlines()] # Positive data
-    neg = [line.rstrip() + " 0" for line in fn.readlines()] # Negative data
-    data.extend(neg)
-    # Shuffle the data randomly so that we can do cross-validation
-    random.shuffle(data)
-    amylnset = open("data/temp/temp_amyl"+str(n)+"set.txt", "w")
-    # Copy the amino acid index to memory and remove incomplete entries
-    aai = open("data/temp/amino_acid_index.txt")
-    aaindex = []
-    for line in aai:
-        if len(line.split()) == 20:
-            try:
-                aaindex.append(map(float, line.split()))
-            except ValueError:
-                pass
-    # Compute the features for each sequence and append them to the data
-    for i in xrange(len(data)):        
-        seq_features = " ".join(str(e) for e in compute_temp_features(data[i].split()[0]))
-        amylnset.write(data[i] + " " + seq_features + "\n")
-        '''
   
 def create_amylnset(n):
     if os.path.exists("data/temp/amyl"+str(n)+"set.txt"):
@@ -205,9 +158,10 @@ def create_amylnset(n):
     temp_amylnset = open("data/temp/temp_amyl"+str(n)+"set.txt", "w")
     # Compute the features for each sequence and append them to the data
     for i in xrange(len(data)):        
-        seq_features = " ".join(str(e) for e in compute_temp_features(data[i].split()[0]))
+        seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0]))
         temp_amylnset.write(data[i] + " " + seq_features + "\n")
     
+    # Create the .csv file of the sorted scores of features if it does not exist
     if not os.path.exists("data/temp/feature_dataframe.csv"):
         ofs.select_optimal_features(6)
         

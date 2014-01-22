@@ -29,7 +29,8 @@ def select_optimal_features(n):
     for i in xrange(len(X[0])-n):
         # Using naive bayes because it's a faster algorithm, check for disadvantages
         clf = GaussianNB()
-        feature_scores.append(cv.cross_val_score(clf, [[x[i]] for x in X], y, cv=5).mean())
+        feature_scores.append(cv.cross_val_score(clf, 
+                        np.array([[x[i]] for x in X]), y, cv=5).mean())
         feature_id.append(i)
     # Get the names of the features   
     feature_names = []

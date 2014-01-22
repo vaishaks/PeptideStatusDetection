@@ -67,8 +67,6 @@ else:
         X.append(map(float, temp[2:]))
     data.close()
     
-
-
     # Split the data into training and test.
     X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
                                                        random_state=0)
