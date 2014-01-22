@@ -7,7 +7,8 @@ from sklearn import cross_validation as cv
 
 def select_optimal_features(n):
     if not os.path.exists("data/temp/temp_amyl"+str(n)+"set.txt"):
-        cd.create_temp_amylnset(n)
+        cd.create_amylnset(n)
+        return
 
     # Extracting features and labels from the dataset.
     X = []
@@ -18,19 +19,17 @@ def select_optimal_features(n):
         y.append(int(temp[1]))
         X.append(map(float, temp[2:]))
     data.close()
-
     X = np.array(X)
     y = np.array(y)
-    Xtrans = X.T
 
     feature_scores = []
     feature_id = []
     # Computing scores taking single features at a time other than the correlation
-    for i in xrange(len(Xtrans)-n):
+    print len(X[0])-n
+    for i in xrange(len(X[0])-n):
         # Using naive bayes because it's a faster algorithm, check for disadvantages
         clf = GaussianNB()
-        feature_scores.append(cv.cross_val_score(clf, [[x] for x in Xtrans[i]], 
-                                                    y, cv=5).mean())
+        feature_scores.append(cv.cross_val_score(clf, [[x[i]] for x in X], y, cv=5).mean())
         feature_id.append(i)
     # Get the names of the features   
     feature_names = []

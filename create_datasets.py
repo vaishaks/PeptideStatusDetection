@@ -145,6 +145,7 @@ def compute_temp_features(seq):
         seq_features.append(k)
     return seq_features
 
+'''
 def create_temp_amylnset(n):
     if os.path.exists("data/temp/temp_amyl"+str(n)+"set.txt"):
         return
@@ -173,19 +174,14 @@ def create_temp_amylnset(n):
     for i in xrange(len(data)):        
         seq_features = " ".join(str(e) for e in compute_temp_features(data[i].split()[0]))
         amylnset.write(data[i] + " " + seq_features + "\n")
+        '''
   
 def create_amylnset(n):
     if os.path.exists("data/temp/amyl"+str(n)+"set.txt"):
         return
     if not os.path.exists("data/temp/amino_acid_index.txt"):
         create_aaindex()
-    if not os.path.exists("data/temp/feature_dataframe.csv"):
-        ofs.select_optimal_features(6)
-    
-    feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
-                                        index_col=0, header=0)
-    feature_ids = [x for x in feature_dataframe["id"]]
-    feature_ids.extend(range(560, 560+n))
+
     
     create_npeptide_data(n)
     fp = open("data/temp/"+str(n)+"peptides.txt")
@@ -195,7 +191,7 @@ def create_amylnset(n):
     data.extend(neg)
     # Shuffle the data randomly so that we can do cross-validation
     random.shuffle(data)
-    amylnset = open("data/temp/amyl"+str(n)+"set.txt", "w")
+
     # Copy the amino acid index to memory and remove incomplete entries
     aai = open("data/temp/amino_acid_index.txt")
     aaindex = []
@@ -205,6 +201,24 @@ def create_amylnset(n):
                 aaindex.append(map(float, line.split()))
             except ValueError:
                 pass
+    
+    # Creating dataset with all features.
+    temp_amylnset = open("data/temp/temp_amyl"+str(n)+"set.txt", "w")
+    # Compute the features for each sequence and append them to the data
+    for i in xrange(len(data)):        
+        seq_features = " ".join(str(e) for e in compute_temp_features(data[i].split()[0]))
+        temp_amylnset.write(data[i] + " " + seq_features + "\n")
+    
+    if not os.path.exists("data/temp/feature_dataframe.csv"):
+        ofs.select_optimal_features(6)
+        
+    # Creating dataset with optimal features.
+    amylnset = open("data/temp/amyl"+str(n)+"set.txt", "w")
+    feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
+                                              index_col=0, header=0)
+    feature_ids = [x for x in feature_dataframe["id"]]
+    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
+        
     # Compute the features for each sequence and append them to the data
     for i in xrange(len(data)):        
         seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0],
