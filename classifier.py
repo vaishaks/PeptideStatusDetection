@@ -19,8 +19,8 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
     clf = joblib.load("data/temp/amyl"+str(n)+"pred.pkl")
 
     # Testing on a standard dataset
-    """"
-    cd.create_zipper_test(6)
+    """
+    cd.create_zipper_data(6)
     zipper_test = open("data/temp/zipper_hexpepset.txt")
     X = []
     y = []
@@ -30,7 +30,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     zipper_test.close()
     print "Zipper test score ", clf.score(X, y)
-    """
+    
     cd.create_pafig_data(6)
     pafig_test = open("data/temp/pafig_hexpepset.txt")
     X = []
@@ -41,7 +41,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     pafig_test.close()
     print "Pafig test score ", clf.score(X, y)
-    """
+
     cd.create_amylpred_test(6)
     amylpred_test = open("data/temp/amylpred_hexpepset.txt")
     X = []
