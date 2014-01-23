@@ -253,20 +253,13 @@ def create_zipper_data(n):
         zipper_hexpepset.write(data[i] + " " + seq_features + "\n")
     print "The zipper_hexpepset.txt has been created."
 
-def create_amylpred_test(n):
+def create_amylpred_data(n):
     if os.path.exists("data/temp/amylpred_hexpepset.txt"):
-        print "Using existing dataset."
+        print "Using existing data."
         return
     if not os.path.exists("data/temp/amino_acid_index.txt"):
         create_aaindex()
-    if not os.path.exists("data/temp/feature_dataframe.csv"):
-        ofs.select_optimal_features(6)
     
-    feature_dataframe = pd.read_csv("data/temp/feature_dataframe.csv", 
-                                        index_col=0, header=0)
-    feature_ids = [x for x in feature_dataframe["id"]]
-    feature_ids.extend(range(560, 560+n))
-            
     f = open("data/test/amylpred_dataset.txt")
     data = []
     for line in f:
@@ -276,23 +269,29 @@ def create_amylpred_test(n):
             data.append(line.split()[1] + " 0") # Negative data
     # Shuffle the data randomly so that we can do cross-validation
     random.shuffle(data)
-    amylpred_hexpepset = open("data/temp/amylpred_hexpepset.txt", "w")
-    # Copy the amino acid index to memory and remove incomplete entries
-    aai = open("data/temp/amino_acid_index.txt")
-    aaindex = []
-    for line in aai:
-        if len(line.split()) == 20:
-            try:
-                aaindex.append(map(float, line.split()))
-            except ValueError:
-                pass
+    
+    # Creating a dataset with all features
+    temp_amylpred_hexpepset = open("data/temp/temp_amylpred_hexpepset.txt", "w")   
     # Compute the features for each sequence and append them to the data
+    for i in xrange(len(data)):        
+        seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0]))
+        temp_amylpred_hexpepset.write(data[i] + " " + seq_features + "\n")
+    temp_amylpred_hexpepset.close()
+    
+    if not os.path.exists("data/temp/amylpred_feature_dataframe.csv"):
+        import optimal_feature_selection as ofs
+        ofs.select_optimal_features(6, "amylpred")
+    
+    feature_dataframe = pd.read_csv("data/temp/amylpred_feature_dataframe.csv", 
+                                        index_col=0, header=0)
+    feature_ids = [x for x in feature_dataframe["id"]]
+    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
+    
+    # Compute the features for each sequence and append them to the data
+    amylpred_hexpepset = open("data/temp/amylpred_hexpepset.txt", "w") 
     for i in xrange(len(data)):        
         seq_features = " ".join(str(e) for e in compute_features(data[i].split()[0],
                                                                     feature_ids))
         amylpred_hexpepset.write(data[i] + " " + seq_features + "\n")
     print "The amylpred_hexpepset.txt has been created."
-
-#For testing
-#create_zipper_test(6)
-#create_pafig_test(6)        
+create_amylpred_data(6)
