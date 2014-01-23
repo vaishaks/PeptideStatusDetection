@@ -1,30 +1,25 @@
 import os
 import numpy as np
 import pandas as pd
-import create_datasets as cd
 from sklearn.naive_bayes import GaussianNB
 from sklearn import cross_validation as cv
 
 def select_optimal_features(n, dataset="amylnset"):
-    if dataset == "amylnset" and not os.path.exists("data/temp/temp_amyl"+
-                                                        str(n)+"set.txt"):
-        cd.create_amylnset(n)
-        return
-    elif dataset == "pafig" and not os.path.exists("data/temp/temp_pafig_hexpepset.txt"):
-        cd.create_pafig_data(n)
-        return
-    else:
-        pass
-
     # Extracting features and labels from the dataset.
     X = []
     y = []
-    if dataset == "amylnset":
-        data = open("data/temp/temp_amyl"+str(n)+"set.txt")
-    elif dataset == "pafig":
-        data = open("data/temp/temp_pafig_hexpepset.txt")
-    else:
-        data = open("data/temp/temp_amyl"+str(n)+"set.txt")
+    try:
+    	if dataset == "amylnset":
+        	data = open("data/temp/temp_amyl"+str(n)+"set.txt")
+    	elif dataset == "pafig":
+        	data = open("data/temp/temp_pafig_hexpepset.txt")
+    	elif dataset == "zipper":
+        	data = open("data/temp/temp_zipper_hexpepset.txt")        
+    	else:
+        	data = open("data/temp/temp_amyl"+str(n)+"set.txt")
+    except IOError:
+    	print "Error: Temporary dataset not found."
+    	return
         
     for line in data:
         temp = line.rstrip().split()

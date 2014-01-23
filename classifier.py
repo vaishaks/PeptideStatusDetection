@@ -20,7 +20,7 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
 
     # Testing on a standard dataset
     """
-    cd.create_zipper_test(6)
+    cd.create_zipper_data(6)
     zipper_test = open("data/temp/zipper_hexpepset.txt")
     X = []
     y = []
@@ -41,7 +41,11 @@ if os.path.exists("data/temp/amyl"+str(n)+"pred.pkl"):
         X.append(map(float, temp[2:]))
     pafig_test.close()
     print "Pafig test score ", clf.score(X, y)
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> fac0f96a346b6307a4203d222ff7e37b638dc273
     cd.create_amylpred_test(6)
     amylpred_test = open("data/temp/amylpred_hexpepset.txt")
     X = []
