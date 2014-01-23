@@ -294,4 +294,3 @@ def create_amylpred_data(n):
                                                                     feature_ids))
         amylpred_hexpepset.write(data[i] + " " + seq_features + "\n")
     print "The amylpred_hexpepset.txt has been created."
-create_amylpred_data(6)

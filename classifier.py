@@ -122,6 +122,22 @@ else:
     data.close()
 
     generic_svm_classifier(X, y, "zipper")
+    
+    # Training with amylpred data
+    print "Creating amylpred dataset.."
+    cd.create_amylpred_data(n)
+    print "Training the classifier.."
+    # Extracting features and labels from the dataset.
+    X = []
+    y = []
+    data = open("data/temp/amylpred_hexpepset.txt")
+    for line in data:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    data.close()
+
+    generic_svm_classifier(X, y, "amylpred")
 
 # TODO Predicting the amyloidogenic regions in a protein sequence in fasta format.
 
