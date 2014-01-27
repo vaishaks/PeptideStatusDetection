@@ -39,7 +39,33 @@ def create_aaindex():
                 feature = []            
             d = False
         line = aaindex.readline()
-        
+    
+    # Adding fifty extra features
+    fiftyprops = open("data/50extraprops.txt", "r")
+    fiftypropsnames = open("data/50extrapropsnames.txt", "r")
+    fiftyprops.readline()
+    fiftyprops.readline()
+    fiftyprops.readline()
+
+    extrapropmap = [0, 14, 11, 1, 2, 13, 3, 5, 6, 7, 9, 8, 10, 4, 12, 15, 16, 18, 19, 17]
+
+    for (props,name) in zip(fiftyprops, fiftypropsnames):
+        props = map(float, props.strip('\r\n').split()[2:])
+        name = '-'.join(name.strip('\r\n').split()[2:])
+        writeprops = range(20)
+        c = 0
+        for i in extrapropmap:
+            writeprops[c] = (props[i] - min(props))/(max(props) - min(props))*4 - 2
+            c += 1  
+        amino_acid_index.write(name + " " + " ".join(map(str, writeprops)) + '\n')  
+
+    fiftyprops.close()
+    fiftypropsnames.close()
+    amino_acid_index.close()
+    aaindex.close()
+
+create_aaindex()
+
 def getPositiveData(id, l, r, n):
     """
     Saves all the positive regions in the proteins in a new file 
