@@ -150,7 +150,9 @@ def compute_features(seq, feature_ids=[]):
         seq_features.append(seq_features_trans[i])
         c += 1
         if c == 100:
-            break
+            # Remove later: Computing for only the 50 extra features
+            pass
+            # break
     seq_features = np.array(seq_features).T
     return seq_features.tolist()
   
@@ -188,6 +190,9 @@ def create_amylnset(n):
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
     feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
+
+    # Remove later: Computing only for those extra 50 features        
+    feature_ids = [x for x in feature_dataframe["id"] if x > 559]
         
     # Compute the features for each sequence and append them to the data
     for i in xrange(len(data)):        
@@ -228,6 +233,9 @@ def create_pafig_data(n):
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
     feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
+
+    # Remove later: Computing only for those extra 50 features        
+    feature_ids = [x for x in feature_dataframe["id"] if x > 559]        
     
     # Compute the features for each sequence and append them to the data
     pafig_hexpepset = open("data/temp/pafig_hexpepset.txt", "w") 
@@ -271,6 +279,9 @@ def create_zipper_data(n):
     feature_ids = [x for x in feature_dataframe["id"]]
     feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
     
+    # Remove later: Computing only for those extra 50 features        
+    feature_ids = [x for x in feature_dataframe["id"] if x > 559]    
+    
     # Compute the features for each sequence and append them to the data
     zipper_hexpepset = open("data/temp/zipper_hexpepset.txt", "w") 
     for i in xrange(len(data)):        
@@ -312,6 +323,9 @@ def create_amylpred_data(n):
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
     feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
+    
+    # Remove later: Computing only for those extra 50 features        
+    feature_ids = [x for x in feature_dataframe["id"] if x > 559]    
     
     # Compute the features for each sequence and append them to the data
     amylpred_hexpepset = open("data/temp/amylpred_hexpepset.txt", "w") 

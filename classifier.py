@@ -109,7 +109,7 @@ else:
         y.append(int(temp[1]))
         X.append(map(float, temp[2:]))
     data.close()
-    
+
     generic_svm_classifier(X, y, "amylnset")
 
     # Training with pafig data
