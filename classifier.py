@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 import pylab as pl
+from itertools import count
 from sklearn import svm
 from sklearn import cross_validation as cv
 from sklearn.externals import joblib
@@ -16,6 +17,7 @@ from sklearn.metrics import roc_curve, auc, confusion_matrix
 datasets_index = ["amylnset", "pafig", "zipper", "amylpred"]
 global_cm = []
 global_auc = []
+fig_count = count()
 
 def generic_svm_classifier(X, y, dataset="amylnset"):
     # Split the data into training and test.
@@ -42,6 +44,7 @@ def generic_svm_classifier(X, y, dataset="amylnset"):
     print "Area under the curve", roc_auc
     
     # Plot roc curve
+    pl.figure(next(fig_count))
     pl.clf()
     pl.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
     pl.plot([0, 1], [0, 1], 'k--')
@@ -61,14 +64,6 @@ def generic_svm_classifier(X, y, dataset="amylnset"):
     
     global_cm.append(cm)
     global_auc.append(roc_auc)
-
-    # Plot the confusion matrix
-    pl.matshow(cm)
-    pl.title('Confusion Matrix')
-    pl.colorbar()
-    pl.ylabel('Amyloidogenic')
-    pl.xlabel('Non-Amyloidogenic')
-    pl.show()
     
     clf = svm.SVC(**grid.best_params_) # Unpack the best params found
     clf.fit(X, y)
@@ -116,7 +111,7 @@ else:
     data.close()
     
     generic_svm_classifier(X, y, "amylnset")
-    
+
     # Training with pafig data
     print "Creating pafig dataset.."
     cd.create_pafig_data(n)
