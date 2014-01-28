@@ -1,0 +1,50 @@
+1. K0   Compressibility
+2. Ht    Thermodynamic transfer hydrophobicity 
+3. Hp   Surrounding hydrophobicity 
+4. P   Polarity
+5. pHi   Isoelectric point 
+6. pK'   Equilibrium constant with reference to the ionization property of COOH group
+7. Mw   Molecular weight
+8. Bl   Bulkiness
+9. Rf   Chromatographic index
+10. Mu   Refractive index
+11. Hnc   Normalized consensus hydrophobicity
+12. Esm   Short and medium range non-bonded energy
+13. El   Long-range non-bonded energy
+14. Et   Total non-bonded energy 
+15. Pa   Alpha-helical tendency
+16. Pb   Beta-helical tendency
+17. Pt   Turn tendency
+18. Pc   Coil tendency
+19. Ca   Helical contact area 
+20. F   Mean rms fluctuational displacement
+21. Br   Buriedness
+22. Ra   Solvent accessible reduction ratio
+23. Ns   Average number of surrounding residues
+24. an   Power to be at the N-terminal of alpha helix
+25. ac   Power to be at the C-terminal of alpha helix
+26. am   Power to be at the middle of alpha helix
+27. V0    Partial-specific volume
+28. Nm   Average medium-range contacts
+29. Nl   Average long-range contacts
+30. Hgm   Combined surrounding hydrophobicity (globular and membrane)
+31. ASAD  Solvent accessible surface area for denatured protein
+32. ASAN  Solvent accessible surface area for native protein
+33. DASA  Solvent accessible surface area for protein unfolding
+34. DGh   Gibbs free energy change of hydration for unfolding
+35. GhD   Gibbs free energy change of hydration for denatured protein 
+36. GdN   Gibbs free energy change of hydration for native protein
+37. DHh   Unfolding enthalpy change of hydration
+38. -TDSh Unfolding entropy change of hydration
+39. DCph  Unfolding hydration heat capacity change
+40. DGc   Unfolding Gibbs free energy change of chain
+41. DHc   Unfolding enthalpy change of chain
+42. -TDSc Unfolding entropy change of chain
+43. DGc   Unfolding Gibbs free energy change 
+44. DHc   Unfolding enthalpy change 
+45. -TDSc Unfolding entropy change 
+46. v   Volume (number of non-hydrogen side chain atoms)
+47. s     Shape (position of branch point in a side-chain)
+48. f     Flexibility (number of side-chain dihedral angles)
+49. Pf-s  Backbone dihedral probability
+50. HyCo  hydrophobicity coeff

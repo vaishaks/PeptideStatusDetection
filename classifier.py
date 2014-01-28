@@ -5,12 +5,17 @@ Creates a classifier for predicting the peptide status.
 import create_datasets as cd
 import os
 import numpy as np
+import pandas as pd
 import pylab as pl
 from sklearn import svm
 from sklearn import cross_validation as cv
 from sklearn.externals import joblib
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import roc_curve, auc, confusion_matrix
+
+datasets_index = ["amylnset", "pafig", "zipper", "amylpred"]
+global_cm = []
+global_auc = []
 
 def generic_svm_classifier(X, y, dataset="amylnset"):
     # Split the data into training and test.
@@ -54,6 +59,9 @@ def generic_svm_classifier(X, y, dataset="amylnset"):
     print "The confusion matrix:"
     print cm
     
+    global_cm.append(cm)
+    global_auc.append(roc_auc)
+
     # Plot the confusion matrix
     pl.matshow(cm)
     pl.title('Confusion Matrix')
@@ -66,6 +74,24 @@ def generic_svm_classifier(X, y, dataset="amylnset"):
     clf.fit(X, y)
     # Save the model for future use. Saves computing time.
     joblib.dump(clf, "data/temp/"+dataset+".pkl")
+
+def create_confusion_csv():
+    tp = []
+    tn = []
+    fp = []
+    fn = []
+    for x in global_cm:
+        tp.append(x[0][0])
+        tn.append(x[1][1])
+        fp.append(x[1][0])
+        fn.append(x[0][1])
+
+    d = {"TP": tp, "TN": tn, "FP": fp, "FN": fn, "AUC": global_auc}
+    confusion_dataframe = pd.DataFrame(d, index=datasets_index)
+    confusion_dataframe.to_csv("data/temp/confusion.csv")
+    print "Confusion csv created."
+
+
 
 n = int(raw_input("Enter the size of the window: "))
 if os.path.exists("data/temp/amylnset.pkl"):
@@ -138,6 +164,5 @@ else:
     data.close()
 
     generic_svm_classifier(X, y, "amylpred")
-
+    create_confusion_csv()
 # TODO Predicting the amyloidogenic regions in a protein sequence in fasta format.
-
