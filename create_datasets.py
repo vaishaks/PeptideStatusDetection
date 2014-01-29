@@ -63,9 +63,7 @@ def create_aaindex():
     fiftypropsnames.close()
     amino_acid_index.close()
     aaindex.close()
-
-create_aaindex()
-
+    
 def getPositiveData(id, l, r, n):
     """
     Saves all the positive regions in the proteins in a new file 
@@ -80,6 +78,25 @@ def getPositiveData(id, l, r, n):
     for line in prot:
         seq += line.rstrip()
     f.write(seq[l-1:r]+"\n")
+    f.close()
+    
+def getPositiveAmylpredData(id, l, r, n):
+    """
+    Saves all the positive regions for amylpred in a new file 
+    if their length is greater than or equal to n.
+    """
+    if r-l+1 < n:
+        return
+    am_p = open("data/temp/amylpred_positive_data.txt", "a")
+    am_prot = open("data/Positive_amylpred/"+id+".fasta")
+    am_prot.readline()
+    seq = ''
+    for line in am_prot:
+        seq += line.rstrip()
+    am_p.write(seq[l-1:r]+"\n")
+    am_p.close()
+    am_prot.close()
+    
 
 def getNegativeData(id, n):
     """
@@ -103,10 +120,15 @@ def getData(n):
         for line in pos:
             l = line.split()
             getPositiveData(l[0], int(l[1]), int(l[2]), n)
+    if not os.path.exists("data/temp/amylpred_positive_data.txt"):
+        pos = open("data/amylpred_positive_regions.txt")
+        for line in pos:
+            l = line.split()
+            getPositiveAmylpredData(l[0], int(l[1]), int(l[2]), n)            
     if not os.path.exists("data/temp/neg-"+str(n)+"peptides.txt"):
         f = open("data/negative_regions.txt")
         for line in f:
-            getNegativeData(line.rstrip(), n)
+            getNegativeData(line.rstrip(), n)           
             
 def create_npeptide_data(n):
     """
@@ -150,9 +172,7 @@ def compute_features(seq, feature_ids=[]):
         seq_features.append(seq_features_trans[i])
         c += 1
         if c == 100:
-            # Remove later: Computing for only the 50 extra features
-            pass
-            # break
+            break
     seq_features = np.array(seq_features).T
     return seq_features.tolist()
   
@@ -190,9 +210,6 @@ def create_amylnset(n):
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
     feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
-
-    # Remove later: Computing only for those extra 50 features        
-    feature_ids = [x for x in feature_dataframe["id"] if x > 559]
         
     # Compute the features for each sequence and append them to the data
     for i in xrange(len(data)):        
@@ -232,10 +249,7 @@ def create_pafig_data(n):
     feature_dataframe = pd.read_csv("data/temp/pafig_feature_dataframe.csv", 
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
-    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
-
-    # Remove later: Computing only for those extra 50 features        
-    feature_ids = [x for x in feature_dataframe["id"] if x > 559]        
+    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))       
     
     # Compute the features for each sequence and append them to the data
     pafig_hexpepset = open("data/temp/pafig_hexpepset.txt", "w") 
@@ -277,10 +291,7 @@ def create_zipper_data(n):
     feature_dataframe = pd.read_csv("data/temp/zipper_feature_dataframe.csv", 
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
-    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
-    
-    # Remove later: Computing only for those extra 50 features        
-    feature_ids = [x for x in feature_dataframe["id"] if x > 559]    
+    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))  
     
     # Compute the features for each sequence and append them to the data
     zipper_hexpepset = open("data/temp/zipper_hexpepset.txt", "w") 
@@ -322,10 +333,7 @@ def create_amylpred_data(n):
     feature_dataframe = pd.read_csv("data/temp/amylpred_feature_dataframe.csv", 
                                         index_col=0, header=0)
     feature_ids = [x for x in feature_dataframe["id"]]
-    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))
-    
-    # Remove later: Computing only for those extra 50 features        
-    feature_ids = [x for x in feature_dataframe["id"] if x > 559]    
+    feature_ids.extend(range(len(feature_ids), len(feature_ids)+n))  
     
     # Compute the features for each sequence and append them to the data
     amylpred_hexpepset = open("data/temp/amylpred_hexpepset.txt", "w") 
