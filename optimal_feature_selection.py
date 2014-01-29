@@ -15,7 +15,7 @@ def select_optimal_features(n, dataset="amylnset"):
     	elif dataset == "zipper":
         	data = open("data/temp/temp_zipper_hexpepset.txt")    
         elif dataset == "amylpred":
-        	data = open("data/temp/temp_amylpred_hexpepset.txt")     
+        	data = open("data/temp/temp_amylpred"+str(n)+"set.txt")     
     	else:
         	data = open("data/temp/temp_amyl"+str(n)+"set.txt")
     except IOError:

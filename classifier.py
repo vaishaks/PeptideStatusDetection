@@ -17,9 +17,11 @@ from sklearn.metrics import roc_curve, auc, confusion_matrix
 datasets_index = ["amylnset", "pafig", "zipper", "amylpred"]
 global_cm = []
 global_auc = []
+amylpred_cm = []
+amylpred_auc = []
 fig_count = count()
 
-def generic_svm_classifier(X, y, dataset="amylnset"):
+def generic_svm_classifier(X, y, dataset="amylnset", n=6):
     # Split the data into training and test.
     X_train, X_test, y_train, y_test = cv.train_test_split(X, y, test_size=0.2, 
                                                        random_state=0)
@@ -62,15 +64,25 @@ def generic_svm_classifier(X, y, dataset="amylnset"):
     print "The confusion matrix:"
     print cm
     
-    global_cm.append(cm)
-    global_auc.append(roc_auc)
+    if dataset == "amylpred" and n == 6:
+        global_cm.append(cm)
+        global_auc.append(roc_auc)
+        amylpred_cm.append(cm)
+        amylpred_auc.append(roc_auc)
+    elif dataset == "amylpred" and n > 6:
+        amylpred_cm.append(cm)
+        amylpred_auc.append(roc_auc)
+    else:
+        global_cm.append(cm)
+        global_auc.append(roc_auc)                
     
     clf = svm.SVC(**grid.best_params_) # Unpack the best params found
     clf.fit(X, y)
     # Save the model for future use. Saves computing time.
-    joblib.dump(clf, "data/temp/"+dataset+".pkl")
+    joblib.dump(clf, "data/temp/"+dataset+str(n)+".pkl")
 
 def create_confusion_csv():
+    """
     tp = []
     tn = []
     fp = []
@@ -85,10 +97,26 @@ def create_confusion_csv():
     confusion_dataframe = pd.DataFrame(d, index=datasets_index)
     confusion_dataframe.to_csv("data/temp/confusion.csv")
     print "Confusion csv created."
+    """
+    tp = []
+    tn = []
+    fp = []
+    fn = []
+    for x in amylpred_cm:
+        tp.append(x[0][0])
+        tn.append(x[1][1])
+        fp.append(x[1][0])
+        fn.append(x[0][1])
+
+    d = {"TP": tp, "TN": tn, "FP": fp, "FN": fn, "AUC": amylpred_auc}
+    confusion_dataframe = pd.DataFrame(d, index=["amylpred6set", 
+                                                "amylpred7set", "amylpred8set"])
+    confusion_dataframe.to_csv("data/temp/amylpred_confusion.csv")    
+    print "Amylpred Confusion csv created."    
 
 
 
-n = int(raw_input("Enter the size of the window: "))
+n = 6
 if os.path.exists("data/temp/amylnset.pkl"):
     print "Using a pre-trained classifier.."
     clf = joblib.load("data/temp/amylnset.pkl")
@@ -97,6 +125,7 @@ if os.path.exists("data/temp/amylnset.pkl"):
     
 else:
     # Training with amylnset data
+    """
     print "Creating amylnset.."
     cd.create_amylnset(n)
     print "Training the classifier.."
@@ -143,15 +172,17 @@ else:
     data.close()
 
     generic_svm_classifier(X, y, "zipper")
-    
+    """
     # Training with amylpred data
     print "Creating amylpred dataset.."
     cd.create_amylpred_data(n)
+    cd.create_amylpred_data(n+1)
+    cd.create_amylpred_data(n+2)
     print "Training the classifier.."
     # Extracting features and labels from the dataset.
     X = []
     y = []
-    data = open("data/temp/amylpred_hexpepset.txt")
+    data = open("data/temp/amylpred"+str(n)+"set.txt")
     for line in data:
         temp = line.rstrip().split()
         y.append(int(temp[1]))
@@ -159,5 +190,30 @@ else:
     data.close()
 
     generic_svm_classifier(X, y, "amylpred")
+    
+    # Extracting features and labels from the dataset.
+    X = []
+    y = []
+    data = open("data/temp/amylpred"+str(n+1)+"set.txt")
+    for line in data:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    data.close()
+
+    generic_svm_classifier(X, y, "amylpred", n+1)
+
+    # Extracting features and labels from the dataset.
+    X = []
+    y = []
+    data = open("data/temp/amylpred"+str(n+2)+"set.txt")
+    for line in data:
+        temp = line.rstrip().split()
+        y.append(int(temp[1]))
+        X.append(map(float, temp[2:]))
+    data.close()
+
+    generic_svm_classifier(X, y, "amylpred", n+2)
+            
     create_confusion_csv()
 # TODO Predicting the amyloidogenic regions in a protein sequence in fasta format.
