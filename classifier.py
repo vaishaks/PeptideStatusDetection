@@ -82,7 +82,6 @@ def generic_svm_classifier(X, y, dataset="amylnset", n=6):
     joblib.dump(clf, "data/temp/"+dataset+str(n)+".pkl")
 
 def create_confusion_csv():
-    """
     tp = []
     tn = []
     fp = []
@@ -97,7 +96,7 @@ def create_confusion_csv():
     confusion_dataframe = pd.DataFrame(d, index=datasets_index)
     confusion_dataframe.to_csv("data/temp/confusion.csv")
     print "Confusion csv created."
-    """
+    
     tp = []
     tn = []
     fp = []
@@ -125,7 +124,6 @@ if os.path.exists("data/temp/amylnset.pkl"):
     
 else:
     # Training with amylnset data
-    """
     print "Creating amylnset.."
     cd.create_amylnset(n)
     print "Training the classifier.."
@@ -172,7 +170,7 @@ else:
     data.close()
 
     generic_svm_classifier(X, y, "zipper")
-    """
+    
     # Training with amylpred data
     print "Creating amylpred dataset.."
     cd.create_amylpred_data(n)
